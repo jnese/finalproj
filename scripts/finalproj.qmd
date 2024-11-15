@@ -2,6 +2,8 @@
 title: "Final Project"
 format: html
 editor: visual
+bibliography: references.bib
+link-citations: true
 ---
 
 Test
