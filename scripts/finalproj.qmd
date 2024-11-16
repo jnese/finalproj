@@ -3,3 +3,217 @@ title: "Final Project"
 format: html
 editor: visual
 ---
+
+Final Project
+
+1.  Load Packages
+
+```{r}
+library(Lahman)
+library(nlme)
+library(janitor)
+library(tidyverse)
+library(rio)
+library(mdsr)
+library(here)
+library(ggplot2)
+```
+
+2.  Load Data
+
+```{r}
+data <- import(here("data", "finalproj.csv")) %>%
+  as_tibble()
+```
+
+Data Cleaning- Demographics/Characteristics
+
+```{r}
+data$gender <- as.factor(data$gender)
+data$gender
+
+data$age <- as.factor(data$age)
+data$age
+
+data <- data%>%
+  mutate(id= row_number())
+
+data <- data %>%
+  mutate(yrs_combine = recode(
+    yrs_teach,
+    "0-1 years" = "0-5 years",
+    "2-5 years" = "0-5 years",
+    "6-10 years" = "6-10 years",
+    "11-15 years" = "11+ years",
+    "More than 15 years" = "11+ years",
+    .default ="Unknown"  # Change as necessary for unmatched values
+  ))
+
+data
+```
+
+Measure Cleaning
+
+```{r}
+erq_data_recode <- data %>%
+  mutate(across(starts_with("er"), ~ case_when(.== "Strongly disagree" ~ 1,
+                                               .=="Disagree" ~ 2,
+                                               .=="Somewhat disagree" ~ 3,
+                                               .=="Neither agree nor disagree (neutral)" ~ 4,
+                                               .=="Somewhat agree" ~ 5,
+                                               .=="Agree" ~ 6,
+                                               .=="Strongly agree" ~ 7,
+                                               .== "" ~ NA_real_)))
+
+pro_data_recode <- erq_data_recode %>%
+  mutate(across(starts_with("pro"), ~ case_when(.=="Never" ~ 1,
+                                               .=="Rarely" ~ 2,
+                                               .=="Sometimes" ~ 3,
+                                               .=="Often" ~ 4,
+                                               .=="Very often" ~ 5,
+                                               .== "" ~ NA_real_)))
+
+final_data <- pro_data_recode %>%
+  mutate(across(starts_with("mhl"), ~ case_when(.== "Strongly disagree" ~ 1,
+                                               .=="Disagree" ~ 2,
+                                               .=="Somewhat disagree" ~ 3,
+                                               .=="Somewhat agree" ~ 4,
+                                               .=="Agree" ~ 5,
+                                               .=="Strongly agree" ~ 6,
+                                               .== "" ~ NA_real_)))
+
+
+
+final_data<- final_data %>%
+  mutate(mean_mhl_id = ((mhl_1 + mhl_2 + mhl_3 + mhl_4 + mhl_5 + mhl_6 + mhl_7 + mhl_8 + mhl_9 + mhl_10 + mhl_11 + mhl_11 + mhl_12 + mhl_13 + mhl_14 + mhl_15)/15))
+
+final_data
+```
+
+ProQOL
+
+```{r}
+#Step 1: Reversals
+
+#items 1, 2, 15, 17, 29
+# 1 ->5
+# 2 ->4
+# 4-> 2
+# 5 ->1
+
+final_data <- final_data %>%
+  mutate(pro_1 = as.numeric(recode(
+    pro_1,
+    `1` = "5",
+    `2` = "4",
+    `3` = "3",
+    `4` = "2",
+    `5` = "1")))
+
+final_data <- final_data %>%
+  mutate(pro_2 = as.numeric(recode(
+    pro_2,
+    `1` = "5",
+    `2` = "4",
+    `3` = "3",
+    `4` = "2",
+    `5` = "1")))
+
+final_data <- final_data %>%
+  mutate(pro_15 = as.numeric(recode(
+    pro_15,
+    `1` = "5",
+    `2` = "4",
+    `3` = "3",
+    `4` = "2",
+    `5` = "1")))
+
+final_data <- final_data %>%
+  mutate(pro_17 = as.numeric(recode(
+    pro_17,
+    `1` = "5",
+    `2` = "4",
+    `3` = "3",
+    `4` = "2",
+    `5` = "1")))
+
+final_data <- final_data %>%
+  mutate(pro_29 = as.numeric(recode(
+    pro_29,
+    `1` = "5",
+    `2` = "4",
+    `3` = "3",
+    `4` = "2",
+    `5` = "1")))
+
+#Step 2 Compassion Satisfaction
+
+#add scores on 3, 6, 12, 16, 18, 20, 22, 24, 27, 30
+
+final_data <- final_data %>%
+  mutate(sum_comp_satis = (pro_3 + pro_6 + pro_12 + pro_16 + pro_18 + pro_20 + pro_22 + pro_24 + pro_27 + pro_30))
+
+# Step 3 Burnout 
+#add scores on 1, 4, 8, 10, 15, 17, 19, 21, 26, 29 
+final_data
+
+final_data <- final_data %>%
+  mutate(sum_burnout = pro_1 + pro_4 + pro_8 + pro_10 + pro_15 + pro_17 + pro_19 + pro_21 + pro_26 + pro_29)
+
+
+# Step 4 Secondary Traumatic Stress
+#add scores on 2, 5, 7, 9, 11, 13, 14, 23, 25, 28 
+
+final_data <- final_data %>%
+  mutate(sum_sectrauma = pro_2 + pro_5 + pro_7 + pro_9 + pro_11 + pro_13 + pro_14 + pro_23 + pro_25 + pro_28)
+
+#step 5 frequency table and histogram for compassion
+
+frequency_table <- final_data %>%
+  count(sum_comp_satis) %>%
+  arrange(desc(n))
+frequency_table
+print(frequency_table)
+
+
+comp_hist <- ggplot(final_data, aes(x=sum_comp_satis)) +
+  geom_histogram()
+
+comp_hist
+
+#step 6 frequency table and histogram for burnout
+
+frequency_table_2 <- final_data %>%
+  count(sum_burnout) %>%
+  arrange(desc(n))
+frequency_table_2
+print(frequency_table_2)
+
+
+burnout_hist <- ggplot(final_data, aes(x=sum_burnout)) +
+  geom_histogram()
+
+burnout_hist
+
+#step 7 frequency table and histogram for trauma 
+
+frequency_table_3 <- final_data %>%
+  count(sum_sectrauma) %>%
+  arrange(desc(n))
+frequency_table_3
+print(frequency_table_3)
+
+
+trauma_hist <- ggplot(final_data, aes(x=sum_sectrauma)) +
+  geom_histogram()
+
+trauma_hist
+```
+
+Research Questions
+
+1.  Do teacher reports of mental health efficacy differ by school type (i.e., elementary, middle, high school)? 
+
+2.  Is there a relationship between teacher years of experience and teacher reports of mental health efficacy?
+
+3.  Is there a relationship between teacher mental health efficacy and burnout?
