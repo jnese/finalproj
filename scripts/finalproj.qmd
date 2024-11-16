@@ -2,6 +2,8 @@
 title: "Final Project"
 format: html
 editor: visual
+bibliography: references.bib
+link-citations: true
 ---
 
 Final Project
@@ -217,3 +219,5 @@ Research Questions
 2.  Is there a relationship between teacher years of experience and teacher reports of mental health efficacy?
 
 3.  Is there a relationship between teacher mental health efficacy and burnout?
+
+Test
