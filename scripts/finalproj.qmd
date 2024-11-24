@@ -1,36 +1,50 @@
 ---
 title: "Final Project"
-format: html
+author: "Haley Brown, Sabine Scott, Suzie Stadelman, & Emily Wilke"
+format: 
+  html:
+    toc: true
+    toc-depth: 5
+    toc-title: "Table of Contents"
+    code-fold: true
+    code-summary: "Show the code"
 editor: visual
 bibliography: references.bib
 link-citations: true
+execute: 
+  eval: true
+  echo: true
+
 ---
 
-Final Project
-
-1.  Load Packages
+## 1.  Load Packages
 
 ```{r}
+
+#install.packages("Lahman")
 library(Lahman)
 library(nlme)
 library(janitor)
 library(tidyverse)
 library(rio)
+#install.packages("mdsr")
 library(mdsr)
 library(here)
 library(ggplot2)
 ```
 
-2.  Load Data
+## 2.  Read Data
 
 ```{r}
 data <- import(here("data", "finalproj.csv")) %>%
   as_tibble()
 ```
 
-Data Cleaning- Demographics/Characteristics
+## 3. Data Cleaning & Tidying
+### a. Demographics/Characteristics
 
 ```{r}
+
 data$gender <- as.factor(data$gender)
 data$gender
 
@@ -54,7 +68,7 @@ data <- data %>%
 data
 ```
 
-Measure Cleaning
+### b. Measure Cleaning
 
 ```{r}
 erq_data_recode <- data %>%
@@ -92,7 +106,7 @@ final_data<- final_data %>%
 final_data
 ```
 
-ProQOL
+#### i. ProQOL
 
 ```{r}
 #Step 1: Reversals
@@ -221,3 +235,12 @@ Research Questions (as reference)
 3.  Is there a relationship between teacher mental health efficacy and burnout?
 
 Test
+
+
+
+## References (Test)
+
+here is one reference [@r]
+
+here is another one @here
+
