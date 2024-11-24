@@ -16,22 +16,21 @@ execute:
   echo: true
 ---
 
-#Code
+# Code
 
 ## 1. Load Packages
 
 ```{r}
 
-#install.packages("Lahman")
 library(Lahman)
 library(nlme)
 library(janitor)
 library(tidyverse)
 library(rio)
-#install.packages("mdsr")
 library(mdsr)
 library(here)
 library(ggplot2)
+library(dplyr)
 
 ##All but nlme has been cited in the .bib document. If any more packages get used will need to add citation. -Suzie
 ```
@@ -232,7 +231,22 @@ trauma_hist <- ggplot(final_data, aes(x=sum_sectrauma)) +
 trauma_hist
 ```
 
-```{r}
+# Plot 1
+```{r, plot-1}
+
+#Mental Health Efficacy by School Type
+
+table(final_data$school_type)
+#There are 5 answer options here. 4 people selected two options. Need to decide how to clean this. 
+table(final_data$school_type_other)
+#Two people wrote in answers. Again need to decide how to clean this. 
+
+
+#final_data %>%
+  #ggplot(aes(school_type, **mental health efficacy measure here**) +
+#geom_*** +
+#theme
+
 
 ```
 
@@ -248,17 +262,17 @@ Test
 
 # Writing
 
-## Abstract
+### Abstract
 
-## Introduction
+### Introduction
 
-## Methods
+### Methods
 
-## Results
+### Results
 
-## Discussion
+### Discussion
 
-## References (Test)
+#### Reference Notes
 
 here is one reference [@r]
 
