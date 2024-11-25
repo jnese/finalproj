@@ -232,6 +232,7 @@ trauma_hist
 ```
 
 # Plot 1
+
 ```{r, plot-1}
 
 #Mental Health Efficacy by School Type
@@ -247,7 +248,9 @@ table(final_data$school_type_other)
 #geom_*** +
 #theme
 
-
+#my edits
+here::here()
+# good research questions
 ```
 
 Research Questions (as reference)
